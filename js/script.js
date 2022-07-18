@@ -1,49 +1,73 @@
 ﻿
-let CitiesData = {
-    tehran: { City: "Tehran", temp: 15, weader: "Sunny", humidity: 4, windspeed: 6 },
-    tabriz: { City: "Tabriz", temp: 4, weader: "Windy", humidity: 2, windspeed: 8 },
-    lorestean: { City: "Lorestean", temp: 3, weader: "Rainy", humidity: 9, windspeed: 12 },
-    esfahan: { City: "Esfahan", temp: 6, weader: "Snowy", humidity: 3, windspeed: 6 },
-}
 let $ = document
-let SearchButton = $.querySelector(".SearchButton")
-let searchBar = $.querySelector(".search-bar")
-SearchButton.addEventListener("click", function () {
+
+const SearchButton = $.querySelector(".SearchButton")
+const searchBar = $.querySelector(".search-bar")
+let apiData={
+    url:'https://api.openweathermap.org/data/2.5/weather?q=',
+    key:'2192343557a9f9572d9adf473473bd26'
+}
+
+
+const fetchData=(e)=>{
     let searchBarValue = searchBar.value
-    let cityData = CitiesData[searchBarValue]
-    if (cityData) {
-        $.querySelector(".city").innerHTML = "Weather in" + cityData.City
-        $.querySelector(".temp").innerHTML = cityData.temp + "°C"
-        $.querySelector(".description").innerHTML = cityData.weader
-        $.querySelector(".humidity").innerHTML = "Humidity :" + cityData.humidity + "%"
-        $.querySelector(".wind").innerHTML = "Wind speed : "+cityData.windspeed + "Km/h"
-        $.querySelector(".weather").classList.remove("loading")
-    }else{
-        alert("نام شهر را به درستی وارد کنید؟")
-    }
-})/*
-let CitiesData = [
-     { City: "Tehran", temp: 15, weader: "Sunny", humidity: 4, windspeed: 6 },
-     { City: "Tabriz", temp: 4, weader: "Windy", humidity: 2, windspeed: 8 },
-     { City: "Lorestean", temp: 3, weader: "Rainy", humidity: 9, windspeed: 12 },
-     { City: "Esfahan", temp: 6, weader: "Snowy", humidity: 3, windspeed: 6 },
-]
-let $=document
-let searchButton=$.querySelector("SearchButton")
-let searchBar=$.querySelector("search-bar")
-  searchButton.addEventListener('click',function(){
-    let searchBarValue=searchBar.Value
-    let citydata=CitiesData.find(function (item) {
-        return item.City=searchBarValue
+    console.log(searchBarValue)
+    fetch(`${apiData.url} ${searchBarValue}&&appid=${apiData.key}`)
+    .then(res=>res.json())
+    .then(data=>{
+        console.log(data)
+        showData(data)
+    }).catch(err =>{
+        alert("city not found")
     })
-    if (citydata) {
-        $.querySelector(".city").innerHTML = "Weather in" + cityData.City
-        $.querySelector(".temp").innerHTML = cityData.temp + "°C"
-        $.querySelector(".description").innerHTML = cityData.weader
-        $.querySelector(".humidity").innerHTML = "Humidity :" + cityData.humidity + "%"
-        $.querySelector(".wind").innerHTML = "Wind speed : "+cityData.windspeed + "Km/h"
-        $.querySelector(".weather").classList.remove("loading")
-    }else{
-        alert("نام شهر را به درستی وارد کنید؟")
+}
+
+const showData=(data)=>{
+    let divWeather =$.querySelector(".weather")
+    divWeather.classList.remove("loading")
+
+    
+     let city =$.querySelector(".city")
+     city.innerHTML=`${data.name} , ${data.sys.country}`
+    
+    let temp=$.querySelector(".temp")
+    temp.innerHTML=`${Math.floor(data.main.temp-273.15)}°C `
+    
+    let hiLow=$.querySelector(".hi-low")
+    hiLow.innerHTML=`${Math.floor(data.main.temp_min-273.15)}°C/ ${Math.floor(data.main.temp_max-273.15)}°C`
+    
+    let description=$.querySelector(".description")
+    description.innerHTML =`${data.weather[0].main}`
+    
+    let dateElem = document.querySelector('.date')
+    dateElem.innerHTML = showDate()
+}
+
+function showDate () {
+
+
+    let months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        
+    let days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
+    let now = new Date()
+
+    let day = days[now.getDay()]
+    let month = months[now.getMonth()]
+    let year = now.getFullYear()
+    let date = now.getDate()
+    
+    return `${day} ${date} ${month} ${year}`
+
+}
+SearchButton.addEventListener("click", function (event) {
+    event.preventDefault()
+
+    fetchData()
+})
+searchBar.addEventListener("keypress",(event)=>{
+    // event.preventDefault()
+    if(event.keyCode === 13) {
+        fetchData()
     }
-    })*/
+})
