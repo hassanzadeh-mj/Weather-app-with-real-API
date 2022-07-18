@@ -1,2 +1,2 @@
-# Js_exercises-weather-app-
+# Weather app with real API
 For more familiarity with arrays
