@@ -66,7 +66,6 @@ SearchButton.addEventListener("click", function (event) {
     fetchData()
 })
 searchBar.addEventListener("keypress",(event)=>{
-    // event.preventDefault()
     if(event.keyCode === 13) {
         fetchData()
     }
